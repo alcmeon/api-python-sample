@@ -12,7 +12,6 @@ def send_text(args):
     payload = {
         "body": "message %s" % message_id,
         "sourceId": args.business_id,
-#        "locale": "en_US",
         "destinationId": args.destination_id,
         "v": 1,
         "type": "text",
