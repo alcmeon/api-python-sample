@@ -27,12 +27,10 @@ def _pre_upload(args, nencrypted):
         "MMCS-Size": str(nencrypted)
     }
     response = requests.get(bzc.alcmeon_url(args, '/preUpload'), headers = headers, auth = (args.company_id, args.secret))
-    response.raise_for_status()
     return response.json()
 
 def _upload(args, pre_upload, encrypted):
     response = requests.post(pre_upload['upload-url'], data = encrypted)
-    response.raise_for_status()
     return response.json()
 
 def _send(args, key, nencrypted, pre_upload, uploaded):
@@ -60,7 +58,6 @@ def _send(args, key, nencrypted, pre_upload, uploaded):
         }]
     }
     response = requests.post(bzc.alcmeon_url(args, '/message'), headers = headers, json = payload, auth = (args.company_id, args.secret))
-    response.raise_for_status()
     return response
 
 
