@@ -17,7 +17,7 @@ def send_text(args):
         "type": "text",
         "id": message_id
     }
-    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%(company_id)s/message" % {'company_id' : args.company_id}
+    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/message" % args.company_id
 
     response = requests.post(url, auth=(args.company_id, args.secret), headers=headers, json=payload)
     response.raise_for_status()
