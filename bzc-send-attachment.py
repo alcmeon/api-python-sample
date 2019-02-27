@@ -1,7 +1,6 @@
 import argparse
 import uuid
 import requests
-import bzc
 
 def _encrypt(data):
     import os
@@ -26,7 +25,8 @@ def _pre_upload(args, nencrypted):
         "Source-Id": args.business_id,
         "MMCS-Size": str(nencrypted)
     }
-    response = requests.get(bzc.alcmeon_url(args, '/preUpload'), headers = headers, auth = (args.company_id, args.secret))
+    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/preUpload" % args.company_id
+    response = requests.get(url, headers = headers, auth = (args.company_id, args.secret))
     return response.json()
 
 def _upload(args, pre_upload, encrypted):
@@ -57,7 +57,8 @@ def _send(args, key, nencrypted, pre_upload, uploaded):
             "key": key
         }]
     }
-    response = requests.post(bzc.alcmeon_url(args, '/message'), headers = headers, json = payload, auth = (args.company_id, args.secret))
+    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/message" % args.company_id
+    response = requests.post(url, headers = headers, json = payload, auth = (args.company_id, args.secret))
     return response
 
 
