@@ -2,23 +2,44 @@ import argparse
 import uuid
 import requests
 
-def send_text(args):
+def send_authentication(args):
     message_id = str(uuid.uuid4())
+    request_id = str(uuid.uuid4())
+
     headers = {
         "id": message_id,
         "Source-Id": args.business_id,
         "Destination-Id": args.destination_id
     }
+
     payload = {
-        "body": "message %s" % message_id,
         "sourceId": args.business_id,
         "destinationId": args.destination_id,
         "v": 1,
-        "type": "text",
-        "id": message_id
+        "id": message_id,
+        "type": "interactive",
+        "interactiveData": {
+            "bid": "com.apple.messages.MSMessageExtensionBalloonPlugin:0000000000:com.apple.icloud.apps.messages.business.extension",
+            "data": {
+                "version": "1.0",
+                "requestIdentifier": request_id,
+                "authenticate": {
+                    "oauth2": {
+                        "responseType": "code",
+                        "scope": ["email", "profile"],
+                        "state": "security_token",
+                        "responseEncryptionKey": "BFz948MTG3OQ0Q69JHUiBG7dZ3SMGU1s2bVG9HuyX/hEU4H0pQJUjm/j93uqyVOBM8+i0AlgDvPOZ+UJzy6YGmU=",
+                        "clientSecret": "YourClientSecret"
+                    }
+                },
+            },
+            "receivedMessage": {
+                "title": "Alcmeon Demo",
+            }
+        }
     }
-    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/message" % args.company_id
 
+    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/authenticate" % args.company_id
     response = requests.post(url, auth=(args.company_id, args.secret), headers=headers, json=payload)
     response.raise_for_status()
 
@@ -30,5 +51,5 @@ if __name__ == '__main__':
     parser.add_argument('--destination-id', required=True)
     args = parser.parse_args()
 
-    send_text(args)
+    send_authentication(args)
 

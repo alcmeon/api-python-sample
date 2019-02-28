@@ -13,7 +13,6 @@ def _get_merchant_session(args):
         "initiativeContext": ALCMEON_PAYMENT_GATEWAY_URL 
     }
 
-
     response = requests.post('https://apple-pay-gateway.apple.com/paymentservices/paymentSession', 
         json=payload, 
         cert=args.merchant_certificate
