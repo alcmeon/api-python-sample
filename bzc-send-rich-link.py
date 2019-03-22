@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import uuid
 import requests
@@ -27,10 +28,10 @@ def send_rich_link(args, png):
         "id": message_id,
         "type": "richLink"
     }
-    url = 'https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/message' % args.company_id
+    url = 'https://api.alcmeon.com/bzc/message'
 
     response = requests.post(url, auth=(args.company_id, args.secret), headers=headers, json=payload)
-    response.raise_for_status()
+    print(response.status_code, response.text)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -41,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument('--png', required=True)
     args = parser.parse_args()
 
-    with open(args.png) as f:
+    with open(args.png, 'rb') as f:
         png = f.read()
 
     send_rich_link(args, png)

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import uuid
 import requests
@@ -10,12 +11,8 @@ def _encrypt(data):
 
     key = os.urandom(32)
 
-    encoded_key = "00%s" % base64.b16encode(key)
-    iv = ""
-    iv_vector = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for i in iv_vector:
-        iv += chr(i)
-    ctr = Counter.new(128, initial_value=long(iv.encode("hex"), 16))
+    encoded_key = b"00%s" % base64.b16encode(key)
+    ctr = Counter.new(128, initial_value=0)
     cipher = AES.new(key, AES.MODE_CTR, counter=ctr)
     encrypted = cipher.encrypt(data)
     return encrypted, encoded_key
@@ -25,7 +22,7 @@ def _pre_upload(args, nencrypted):
         "Source-Id": args.business_id,
         "MMCS-Size": str(nencrypted)
     }
-    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/preUpload" % args.company_id
+    url = "https://api.alcmeon.com/bzc/preUpload"
     response = requests.get(url, headers = headers, auth = (args.company_id, args.secret))
     return response.json()
 
@@ -57,22 +54,22 @@ def _send(args, key, nencrypted, pre_upload, uploaded):
             "key": key
         }]
     }
-    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/message" % args.company_id
+    url = "https://api.alcmeon.com/bzc/message"
     response = requests.post(url, headers = headers, json = payload, auth = (args.company_id, args.secret))
     return response
 
 
 def send_attachment(args):
-    with open(args.png) as f:
+    with open(args.png, 'rb') as f:
         data = f.read()
     encrypted, key = _encrypt(data)
 
     pre = _pre_upload(args, len(encrypted))
 
     uploaded = _upload(args, pre, encrypted)
-
-    _send(args, key, len(encrypted), pre, uploaded)
-
+    print('send')
+    response = _send(args, key, len(encrypted), pre, uploaded)
+    print(response.status_code, response.text)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

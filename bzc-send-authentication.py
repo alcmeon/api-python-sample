@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import uuid
 import requests
@@ -39,9 +40,9 @@ def send_authentication(args):
         }
     }
 
-    url = "https://bzc-proxy.alcmeon.com/bzc-proxy/api/1.0/companies/%s/authenticate" % args.company_id
+    url = "https://api.alcmeon.com/bzc/authenticate"
     response = requests.post(url, auth=(args.company_id, args.secret), headers=headers, json=payload)
-    response.raise_for_status()
+    print(response.status_code, response.text)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
