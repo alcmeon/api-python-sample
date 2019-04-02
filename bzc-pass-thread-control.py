@@ -25,4 +25,4 @@ if __name__ == '__main__':
     parser.add_argument('--metadata', default=None)
     args = parser.parse_args()
 
-    send_pass_thread_control()
+    send_pass_thread_control(args)
